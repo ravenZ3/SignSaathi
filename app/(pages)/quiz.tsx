@@ -3,7 +3,6 @@ import {
 	View,
 	Text,
 	StyleSheet,
-	Button,
 	TouchableOpacity,
 	ScrollView,
 	Modal,
@@ -11,69 +10,65 @@ import {
 } from "react-native"
 import ProgressBar from "@/components/ProgressBar" // Custom ProgressBar component
 import ResultCard from "@/components/ResultCard"
-import { images } from "@/constants"
 import BackButton from "@/components/BackButton"
 import Bar from "@/components/Bar"
+import { images, gif } from "@/constants"
+import { useRouter } from "expo-router"
+
+function f() {
+	console.log(Object.keys(gif).length);  // Logs the number of GIF entries
+  }
+  
 const questions = [
-	// Questions data as per your example
 	{
-		questionText: "What is React?",
+		questionText: "What is the main subject of this GIF?",
+		imageUri: gif.zero, // GIF 
 		answers: [
-			{
-				answerText: "A library for building user interfaces.",
-				isCorrect: true,
-				id: 1,
-			},
-			{ answerText: "A backend framework.", isCorrect: false, id: 2 },
-			{ answerText: "A programming language.", isCorrect: false, id: 3 },
-			{
-				answerText: "A database management system.",
-				isCorrect: false,
-				id: 4,
-			},
+			
+			{ answerText: "1", isCorrect: false, id: 2 },
+			{ answerText: "2", isCorrect: false, id: 3 },
+			{ answerText: "0", isCorrect: true, id: 1 },
+			{ answerText: "3", isCorrect: false, id: 4 },
 		],
 	},
 	{
-		questionText: "What is JSX?",
+		questionText: "What action is shown in this GIF?",
+		imageUri: gif.one, // GIF 1
 		answers: [
-			{
-				answerText:
-					"JavaScript XML, a syntax extension for JavaScript.",
-				isCorrect: true,
-				id: 1,
-			},
-			{ answerText: "A JavaScript framework.", isCorrect: false, id: 2 },
-			{
-				answerText: "A frontend development tool.",
-				isCorrect: false,
-				id: 3,
-			},
-			{
-				answerText: "A markup language similar to HTML.",
-				isCorrect: false,
-				id: 4,
-			},
+			{ answerText: "1", isCorrect: true, id: 1 },
+			{ answerText: "0", isCorrect: false, id: 2 },
+			{ answerText: "2", isCorrect: false, id: 3 },
+			{ answerText: "3", isCorrect: false, id: 4 },
 		],
 	},
 	{
-		questionText: "What is the virtual DOM in React?",
+		questionText: "Identify the key element in this GIF.",
+		imageUri: gif.two, // GIF 2
 		answers: [
-			{
-				answerText: "A lightweight copy of the real DOM.",
-				isCorrect: true,
-				id: 1,
-			},
-			{ answerText: "An alternative to CSS.", isCorrect: false, id: 2 },
-			{
-				answerText: "A server-side rendering technique.",
-				isCorrect: false,
-				id: 3,
-			},
-			{
-				answerText: "A database management system.",
-				isCorrect: false,
-				id: 4,
-			},
+			{ answerText: "2", isCorrect: true, id: 1 },
+			{ answerText: "0", isCorrect: false, id: 2 },
+			{ answerText: "1", isCorrect: false, id: 3 },
+			{ answerText: "3", isCorrect: false, id: 4 },
+		],
+	},
+	{
+		questionText: "What is the setting of this GIF?",
+		imageUri: gif.three, // GIF 3
+		answers: [
+			{ answerText: "3", isCorrect: true, id: 1 },
+			{ answerText: "0", isCorrect: false, id: 2 },
+			{ answerText: "1", isCorrect: false, id: 3 },
+			{ answerText: "2", isCorrect: false, id: 4 },
+		],
+	},
+	{
+		questionText: "What type of GIF is this?",
+		imageUri: gif.four, // GIF 4
+		answers: [
+			{ answerText: "4", isCorrect: true, id: 1 },
+			{ answerText: "0", isCorrect: false, id: 2 },
+			{ answerText: "1", isCorrect: false, id: 3 },
+			{ answerText: "2", isCorrect: false, id: 4 },
 		],
 	},
 ]
@@ -85,7 +80,7 @@ const Quiz = () => {
 	const [selectedAnswer, setSelectedAnswer] = useState(null)
 	const [isCorrect, setIsCorrect] = useState(null)
 	const [isSubmitted, setSubmitted] = useState(false)
-
+	const router = useRouter()
 	const handleNext = () => {
 		if (!started) {
 			setStarted(true)
@@ -118,15 +113,15 @@ const Quiz = () => {
 	const scorePercentage = (score / questions.length) * 100
 	if (isSubmitted && scorePercentage === 100) {
 		return (
-			<View className="flex-1 justify-center items-center bg-[#121212]">
+			<View style={styles.container}>
 				<BackButton
 					redirectPath={"/(root)/(tabs)/home"}
-					className="absolute top-2 left-2"
+					style={styles.backButton}
 				/>
-				<View className="flex flex-col justify-center items-center">
+				<View style={styles.congratulationsContainer}>
 					<Image source={images.owlSmile} style={styles.owlImage} />
-					<Text style={styles.congratsText} className="">
-						Congratulations! All Correct 🥳
+					<Text style={styles.congratsText}>
+						 Perfect Score 🥳
 					</Text>
 				</View>
 			</View>
@@ -146,11 +141,13 @@ const Quiz = () => {
 						)?.answerText
 					}
 				/>
+				<View style={styles.footer}>
+					<Text style={styles.footerText}>Back to home.</Text>
+					<BackButton redirectPath={"/(root)/(tabs)/home"} />
+				</View>
 				<Text style={styles.finalScore}>
-					Your score: {score} ({correctPercentage.toFixed(2)}%)
+					{score} ({correctPercentage.toFixed(2)}%)
 				</Text>
-
-				{/* Displaying the percentage bars */}
 				<View style={styles.barContainer}>
 					<View style={styles.barLabel}>
 						<Text style={styles.labelText}>Correct Answers</Text>
@@ -177,28 +174,35 @@ const Quiz = () => {
 							style={styles.startButton}
 							onPress={() => setStarted(true)}
 						>
-							<Text style={styles.footerButtonText}>Start</Text>
+							<Text style={styles.startButtonText}>Start</Text>
 						</TouchableOpacity>
 					</View>
 				</Modal>
 			)}
 			<View style={styles.header}>
-				<TouchableOpacity onPress={handlePrev} style={styles.navButton}>
-					<Text style={styles.navButtonText}>Previous</Text>
-				</TouchableOpacity>
+				<View className="flex flex-row justify-between">
+					<TouchableOpacity
+						onPress={handlePrev}
+						style={styles.navButton}
+					>
+						<Text style={styles.navButtonText}>Previous</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.navButton} onPress={() => (router.replace('/(root)/(tabs)/home'))}>
+						<Text style={styles.navButtonText}>Close</Text>
+					</TouchableOpacity>
+				</View>
 				<ProgressBar
 					value={(currentQuestion / questions.length) * 100}
 				/>
-				<TouchableOpacity style={styles.navButton}>
-					<Text style={styles.navButtonText}>Close</Text>
-				</TouchableOpacity>
 			</View>
-
 			<ScrollView contentContainerStyle={styles.scrollViewContent}>
 				<Text style={styles.questionText}>
 					{questions[currentQuestion].questionText}
 				</Text>
-
+				<Image
+					source={questions[currentQuestion].imageUri}
+					style={styles.image}
+				/>
 				<View style={styles.answerContainer}>
 					{questions[currentQuestion].answers.map((answer) => {
 						const variant =
@@ -238,15 +242,16 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		padding: 16,
-		backgroundColor: "#121212",
+		backgroundColor: "#12121212",
 		borderRadius: 2,
 		borderColor: "red",
+		color: "white",
 	},
 	barContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		marginTop: 20,
-		marginHorizontal:20,
+		marginHorizontal: 20,
 	},
 	barLabel: {
 		alignItems: "center",
@@ -262,93 +267,96 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		marginBottom: 20,
 	},
-	scrollViewContent: {
-		flexGrow: 1,
+	congratulationsContainer: {
+		flex: 1,
 		justifyContent: "center",
-	},
-	header: {
-		flexDirection: "row",
-		justifyContent: "space-between",
 		alignItems: "center",
-		marginBottom: 20,
-		width: "80vw",
 	},
-	navButton: {
-		padding: 8,
-		backgroundColor: "#007BFF",
-		borderRadius: 4,
-	},
-	navButtonText: {
-		color: "white",
-		fontSize: 16,
-	},
-	congratsText: {
-		fontSize: 24,
-		color: "green",
-		textAlign: "center",
-	},
-	questionText: {
-		fontSize: 24,
-		color: "white",
-		marginBottom: 16,
-		textAlign: "center",
+	image: {
+		width: "100%",
+		height: 200,
+		marginVertical: 20,
 	},
 	answerContainer: {
-		marginBottom: 20,
+		marginVertical: 20,
 	},
 	answerButton: {
-		padding: 12,
-		borderRadius: 4,
-		marginBottom: 10,
-	},
-	answerText: {
-		fontSize: 16,
+		padding: 10,
+		borderRadius: 8,
+		marginVertical: 5,
 		color: "white",
-	},
-	outline: {
-		borderColor: "#007BFF",
-		borderWidth: 2,
 	},
 	success: {
-		backgroundColor: "green",
+		backgroundColor: "#28a745",
 	},
 	danger: {
-		backgroundColor: "red",
+		backgroundColor: "#dc3545",
 	},
-	footerButton: {
-		padding: 12,
-		backgroundColor: "#007BFF",
-		borderRadius: 4,
-		position: "absolute",
-		bottom: 20,
-		left: 16,
-		right: 16,
+	outline: {
+		borderColor: "white",
+		borderWidth: 1,
+	},
+	startButton: {
+		padding: 10,
+		backgroundColor: "#007bff",
+		borderRadius: 5,
+	},
+	startButtonText: {
+		color: "#fff",
+		fontSize: 16,
+	},
+	footer: {
+		marginTop: 20,
 		alignItems: "center",
 	},
+	footerButton: {
+		backgroundColor: "#007bff",
+		padding: 15,
+		borderRadius: 5,
+		alignItems: "center",
+		marginVertical: 20,
+	},
 	footerButtonText: {
-		color: "white",
+		color: "#fff",
 		fontSize: 18,
 	},
-	finalScore: {
+	questionText: {
 		fontSize: 18,
 		color: "white",
 		textAlign: "center",
-		marginTop: 20,
 	},
 	modalContent: {
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		backgroundColor: "#fff",
 	},
 	modalText: {
-		fontSize: 24,
+		fontSize: 18,
 		marginBottom: 20,
 	},
-	startButton: {
-		padding: 12,
-		backgroundColor: "#007BFF",
-		borderRadius: 4,
+	navButton: {
+		padding: 6,
+		borderRadius: 50,
+		borderColor: "white",
+		borderWidth: 2,
+		marginBottom: 10,
+	},
+	navButtonText: {
+		color: "#007bff",
+		fontSize: 16,
+	},
+	scrollViewContent: {
+		flexGrow: 1,
+		justifyContent: "center",
+	},
+	backButton: {
+		marginTop: 10,
+	},
+	finalScore: {
+		fontSize: 24,
+		color: "white",
+		textAlign: "center",
+		marginVertical: 20,
 	},
 })
 

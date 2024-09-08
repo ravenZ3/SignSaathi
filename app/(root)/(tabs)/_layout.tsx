@@ -48,14 +48,10 @@ export default function Layout() {
         tabBarInactiveTintColor: "white",
         tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: "#000",
-          borderRadius: 50,
+          backgroundColor: "#000",              
           height: 60,
           position: "absolute",
           bottom: 0,
-          left: 20,
-          right: 20,
-          marginBottom: 20,
           overflow: "hidden",
         },
       }}
